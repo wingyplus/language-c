@@ -795,3 +795,19 @@ describe "Language-C", ->
         expect(lines[0][1]).toEqual value: ' separated', scopes: ['source.cpp', 'comment.line.double-slash.cpp']
         expect(lines[0][2]).toEqual value: '\\', scopes: ['source.cpp', 'comment.line.double-slash.cpp', 'constant.character.escape.line-continuation.c']
         expect(lines[1][0]).toEqual value: 'comment', scopes: ['source.cpp', 'comment.line.double-slash.cpp']
+
+    it "tokenizes digit separators", ->
+      lines = grammar.tokenizeLines '''
+        int d = 1'000'000;
+      '''
+      expect(lines[0][4]).toEqual value: "1'000'000", scopes: ['source.cpp', 'constant.numeric.cpp'];
+
+      lines = grammar.tokenizeLines '''
+        int d = 1'0'0'0;
+      '''
+      expect(lines[0][4]).toEqual value: "1'0'0'0", scopes: ['source.cpp', 'constant.numeric.cpp'];
+
+      lines = grammar.tokenizeLines '''
+        int d = 1'000.00'5;
+      '''
+      expect(lines[0][4]).toEqual value: "1'000.00'5", scopes: ['source.cpp', 'constant.numeric.cpp'];
